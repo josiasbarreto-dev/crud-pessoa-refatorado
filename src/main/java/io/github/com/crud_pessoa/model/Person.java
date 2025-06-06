@@ -3,6 +3,7 @@ package io.github.com.crud_pessoa.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "Pessoa")
@@ -20,6 +21,9 @@ public class Person {
 
     @Column(name = "CPF", unique = true)
     private String cpf;
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Adress> adress;
 
     public Person(long id, String name, LocalDate dateOfBirth, String cpf) {
         this.id = id;
@@ -58,5 +62,13 @@ public class Person {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+
+    public List<Adress> getAdress() {
+        return adress;
+    }
+
+    public void setAdress(List<Adress> adress) {
+        this.adress = adress;
     }
 }
