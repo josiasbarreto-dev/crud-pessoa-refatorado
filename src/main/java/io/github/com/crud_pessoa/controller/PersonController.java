@@ -4,6 +4,7 @@ import io.github.com.crud_pessoa.dto.PersonRequestDTO;
 import io.github.com.crud_pessoa.dto.PersonResponseDTO;
 import io.github.com.crud_pessoa.service.PersonService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,9 @@ public class PersonController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PersonResponseDTO>> listPersons() {
-        List<PersonResponseDTO> persons = service.getAllPersons();
+    public ResponseEntity<Page<PersonResponseDTO>> listPersons( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+
+        Page<PersonResponseDTO> persons = service.getAllPersons(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(persons);
     }
 

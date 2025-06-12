@@ -26,6 +26,7 @@ public class Person {
     private String cpf;
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     @JsonManagedReference
     private List<Address> addresses = new ArrayList<>();
 
