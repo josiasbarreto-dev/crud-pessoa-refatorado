@@ -1,8 +1,11 @@
 package io.github.com.crud_pessoa.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,32 +14,36 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private long id;
+    private Long id;
 
     @Column(name = "NOME", nullable = false)
     private String name;
 
-    @Column(name = "DATA DE ANIVERSÁRIO")
+    @Column(name = "DATA DE ANIVERSARIO")
     private LocalDate dateOfBirth;
 
     @Column(name = "CPF", unique = true)
     private String cpf;
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Adress> adress;
+    @JsonManagedReference
+    private List<Address> addresses = new ArrayList<>();
 
-    public Person(long id, String name, LocalDate dateOfBirth, String cpf) {
-        this.id = id;
+    public Person() {
+
+    }
+
+    public Person(String name, LocalDate dateOfBirth, String cpf) {
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.cpf = cpf;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -64,11 +71,15 @@ public class Person {
         this.cpf = cpf;
     }
 
-    public List<Adress> getAdress() {
-        return adress;
+    public List<Address> getAddresses() {
+        return addresses;
     }
 
-    public void setAdress(List<Adress> adress) {
-        this.adress = adress;
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public int getPersonAge(){
+        return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
     }
 }
