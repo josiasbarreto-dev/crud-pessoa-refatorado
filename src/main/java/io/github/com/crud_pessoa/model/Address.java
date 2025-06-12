@@ -1,10 +1,11 @@
 package io.github.com.crud_pessoa.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Endereço")
-public class Adress {
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -30,16 +31,20 @@ public class Adress {
 
     @ManyToOne
     @JoinColumn(name = "person_id", nullable = false)
+    @JsonBackReference
     private Person person;
 
-    public Adress(Long id, String street, int number, String neighborhood, String city, String state, String zipCode) {
-        this.id = id;
+    public Address(String street, int number, String neighborhood, String city, String state, String zipCode) {
         this.street = street;
         this.number = number;
         this.neighborhood = neighborhood;
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
+    }
+
+    public Address() {
+
     }
 
     public Long getId() {
