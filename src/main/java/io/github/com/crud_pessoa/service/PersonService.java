@@ -55,7 +55,7 @@ public class PersonService {
 
     public PersonResponseDTO updatePerson(PersonRequestDTO dto, Long id) {
         Person currentPerson = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Person not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Person with ID " + id + " not found"));
 
         if (!currentPerson.getCpf().equals(dto.cpf())) {
             throw new CpfMismatchException("CPF mismatch.");
@@ -71,7 +71,7 @@ public class PersonService {
 
     public String calculateAgeById(Long id) {
         Person person = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Pessoa com ID " + id + " não encontrada."));
-        return "A idade de " + person.getName() + " é: " + person.getPersonAge() + " anos.";
+                .orElseThrow(() -> new ResourceNotFoundException("Person with ID " + id + " not found"));
+        return "The age of " + person.getName() + " is: " + person.getPersonAge() + " years.";
     }
 }
