@@ -1,23 +1,73 @@
 package io.github.com.crud_pessoa.service;
 
+import io.github.com.crud_pessoa.dto.PersonRequestDTO;
+import io.github.com.crud_pessoa.dto.PersonResponseDTO;
 import io.github.com.crud_pessoa.exception.CpfAlreadyExistsException;
+import io.github.com.crud_pessoa.exception.CpfMismatchException;
+import io.github.com.crud_pessoa.exception.ResourceNotFoundException;
+import io.github.com.crud_pessoa.mapper.PersonMapper;
 import io.github.com.crud_pessoa.model.Person;
 import io.github.com.crud_pessoa.repository.PersonRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PersonService {
-    private PersonRepository personRepository;
+    private final PersonRepository repository;
+    private final PersonMapper mapper;
 
-    public PersonService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public PersonService(PersonRepository repository, PersonMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public Person savePerson(Person person){
-        if(personRepository.existsByCPF(person.getCpf())){
-            throw new CpfAlreadyExistsException("CPF already registered: " + person.getCpf());
+    public PersonResponseDTO savePerson(PersonRequestDTO dto){
+            Person person = mapper.toEntity(dto);
+            if (repository.existsByCpf(person.getCpf())) {
+                throw new CpfAlreadyExistsException("There is already a registered user with the CPF provided: " + person.getCpf());
+            }
+
+            Person savedPerson = repository.save(person);
+            return mapper.toDTO(savedPerson);
+    }
+
+    public  PersonResponseDTO getPersonById(Long id) {
+        Person person = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Person with ID " + id + " not found."));
+        return mapper.toDTO(person);
+    }
+
+    public List<PersonResponseDTO> getAllPersons() {
+        List<Person> persons = repository.findAll();
+        return mapper.toListDTO(persons);
+    }
+
+    public void deletePerson(Long id) {
+        Person person = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Person with ID " + id + " not found."));
+        repository.delete(person);
+    }
+
+    public PersonResponseDTO updatePerson(PersonRequestDTO dto, Long id){
+        Person currentPerson = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Person not found"));
+
+        if (!currentPerson.getCpf().equals(dto.cpf())) {
+            throw new CpfMismatchException("CPF mismatch.");
         }
-        return personRepository.save(person);
+
+        Person personToUpdate = mapper.toEntity(dto);
+        personToUpdate.setId(id);
+        personToUpdate.getAddresses().forEach(a -> a.setPerson(personToUpdate));
+
+        Person savedPerson = repository.save(personToUpdate);
+        return mapper.toDTO(savedPerson);
+    }
+
+    public String calculateAgeById(Long id){
+        Person person = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pessoa com ID " + id + " não encontrada."));
+        return "A idade de " + person.getName() + " é: " + person.getPersonAge() + " anos.";
     }
 }
