@@ -12,7 +12,8 @@ public record AddressRequestDTO(
         @Size(max = 100, message = "The street address must have a maximum of {max} characters")
         String street,
 
-        int number,
+        @NotBlank(message = "The number cannot be empty")
+        String number,
 
         @NotBlank(message = "The neighborhood cannot be empty")
         @Size(max = 50, message = "The neighborhood must have a maximum of {max} characters")

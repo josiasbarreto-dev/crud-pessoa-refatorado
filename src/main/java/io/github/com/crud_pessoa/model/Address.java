@@ -15,7 +15,7 @@ public class Address {
     private String street;
 
     @Column(name = "NÚMERO")
-    private int number;
+    private String number;
 
     @Column(name = "BAIRRO")
     private String neighborhood;
@@ -34,7 +34,7 @@ public class Address {
     @JsonBackReference
     private Person person;
 
-    public Address(String street, int number, String neighborhood, String city, String state, String zipCode) {
+    public Address(String street, String number, String neighborhood, String city, String state, String zipCode) {
         this.street = street;
         this.number = number;
         this.neighborhood = neighborhood;
@@ -63,11 +63,11 @@ public class Address {
         this.street = street;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
