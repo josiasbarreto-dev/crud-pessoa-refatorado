@@ -4,29 +4,28 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Endereço")
+@Table(name = "endereco")
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "RUA")
+    @Column(name = "rua")
     private String street;
 
-    @Column(name = "NÚMERO")
+    @Column(name = "numero")
     private String number;
 
-    @Column(name = "BAIRRO")
+    @Column(name = "bairro")
     private String neighborhood;
 
-    @Column(name = "CIDADE")
+    @Column(name = "cidade")
     private String city;
 
-    @Column(name = "ESTADO")
+    @Column(name = "estado")
     private String state;
 
-    @Column(name = "CEP")
+    @Column(name = "cep")
     private String zipCode;
 
     @ManyToOne

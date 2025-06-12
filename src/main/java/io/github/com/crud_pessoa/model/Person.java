@@ -9,20 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Pessoa")
+@Table(name = "pessoa")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NOME", nullable = false)
+    @Column(name = "nome", nullable = false)
     private String name;
 
-    @Column(name = "DATA DE ANIVERSARIO")
+    @Column(name = "data_aniversario")
     private LocalDate dateOfBirth;
 
-    @Column(name = "CPF", unique = true)
+    @Column(name = "cpf", unique = true)
     private String cpf;
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
