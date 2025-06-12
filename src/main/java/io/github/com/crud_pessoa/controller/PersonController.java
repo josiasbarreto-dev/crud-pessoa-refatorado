@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/person")
 public class PersonController {
@@ -29,14 +27,14 @@ public class PersonController {
     @GetMapping("/{id}")
     public ResponseEntity<PersonResponseDTO> getPersonById(@PathVariable Long id) {
         PersonResponseDTO person = service.getPersonById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(person);
+        return ResponseEntity.ok(person);
     }
 
     @GetMapping
     public ResponseEntity<Page<PersonResponseDTO>> listPersons( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
         Page<PersonResponseDTO> persons = service.getAllPersons(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(persons);
+        return ResponseEntity.ok(persons);
     }
 
     @DeleteMapping("/{id}")
@@ -48,12 +46,12 @@ public class PersonController {
     @PutMapping("/{id}")
     public ResponseEntity<PersonResponseDTO> updatePerson(@RequestBody @Valid PersonRequestDTO requestDTO, @PathVariable Long id) {
         PersonResponseDTO updatedPerson = service.updatePerson(requestDTO, id);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedPerson);
+        return ResponseEntity.ok(updatedPerson);
     }
 
     @GetMapping("/age/{id}")
     public ResponseEntity<String> calculateAgeById(@PathVariable Long id){
         String calculatedAge = service.calculateAgeById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(calculatedAge);
+        return ResponseEntity.ok(calculatedAge);
     }
 }
