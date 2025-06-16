@@ -13,7 +13,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = { AddressMapper.class })
 public interface PersonMapper {
-    @Mapping(target = "id", ignore = true)
     Person toEntity(PersonRequestDTO dto);
 
     PersonResponseDTO toDTO(Person entity);
