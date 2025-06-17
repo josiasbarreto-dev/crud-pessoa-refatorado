@@ -11,5 +11,5 @@ public record PersonResponseDTO(
         String name,
         LocalDate dateOfBirth,
         String cpf,
-        List<Address> addresses) {
+        List<AddressResponseDTO> addresses) {
 }
