@@ -33,10 +33,12 @@ public class Person {
 
     }
 
-    public Person(String name, LocalDate dateOfBirth, String cpf) {
+    public Person(Long id, String name, LocalDate dateOfBirth, String cpf, List<Address> addresses) {
+        this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.cpf = cpf;
+        this.addresses = addresses;
     }
 
     public Long getId() {

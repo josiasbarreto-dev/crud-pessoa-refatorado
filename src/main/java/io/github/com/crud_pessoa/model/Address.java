@@ -33,7 +33,8 @@ public class Address {
     @JsonBackReference
     private Person person;
 
-    public Address(String street, String number, String neighborhood, String city, String state, String zipCode) {
+    public Address(Long id, String street, String number, String neighborhood, String city, String state, String zipCode) {
+        this.id = id;
         this.street = street;
         this.number = number;
         this.neighborhood = neighborhood;
