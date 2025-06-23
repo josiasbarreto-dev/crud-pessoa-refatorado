@@ -40,6 +40,9 @@ public class PersonServiceTest {
 
     @InjectMocks
     private PersonService personService;
+    private Person person;
+    private final Long validPersonId  = 1L;
+    private final Long invalidPersonId = 999L;
 
     @Test
     @DisplayName("Deve criar uma pessoa com sucesso com CPF único e válido")
@@ -104,14 +107,13 @@ public class PersonServiceTest {
     @Test
     @DisplayName("Quando buscar uma pessoa pelo ID, deve retornar a pessoa correspondente")
     void shouldReturnPersonById() {
-        Long personID = 1L;
-        Person expectedPerson = new Person(personID, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
-        PersonResponseDTO expectedResponseDTO = new PersonResponseDTO(personID, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
+        Person expectedPerson = new Person(validPersonId, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
+        PersonResponseDTO expectedResponseDTO = new PersonResponseDTO(validPersonId, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
 
-        when(personRepository.findById(personID)).thenReturn(Optional.of(expectedPerson));
+        when(personRepository.findById(validPersonId)).thenReturn(Optional.of(expectedPerson));
         when(mapper.toDTO(expectedPerson)).thenReturn(expectedResponseDTO);
 
-        PersonResponseDTO actualResponse = personService.getPersonById(personID);
+        PersonResponseDTO actualResponse = personService.getPersonById(validPersonId);
 
         assertNotNull(actualResponse);
         assertEquals(expectedResponseDTO.id(), actualResponse.id());
@@ -119,51 +121,48 @@ public class PersonServiceTest {
         assertEquals(expectedResponseDTO.dateOfBirth(), actualResponse.dateOfBirth());
         assertEquals(expectedResponseDTO.cpf(), actualResponse.cpf());
 
-        verify(personRepository, times(1)).findById(personID);
+        verify(personRepository, times(1)).findById(validPersonId);
         verify(mapper, times(1)).toDTO(expectedPerson);
     }
 
     @Test
     @DisplayName("Deve lançar uma exceção ao buscar uma pessoa com ID inexistente")
     void shouldThrowExceptionWhenPersonNotFoundById() {
-        Long nonExistentId = 10L;
-        when(personRepository.findById(nonExistentId)).thenThrow(new ResourceNotFoundException("Person with ID " + nonExistentId + " not found."));
+        when(personRepository.findById(invalidPersonId)).thenThrow(new ResourceNotFoundException("Person with ID " + invalidPersonId + " not found."));
         try {
-            personService.getPersonById(nonExistentId);
+            personService.getPersonById(invalidPersonId);
         } catch (ResourceNotFoundException e) {
-            assertEquals("Person with ID " + nonExistentId + " not found.", e.getMessage());
+            assertEquals("Person with ID " + invalidPersonId + " not found.", e.getMessage());
         }
-        verify(personRepository, times(1)).findById(nonExistentId);
+        verify(personRepository, times(1)).findById(invalidPersonId);
         verifyNoMoreInteractions(mapper);
     }
 
     @Test
     @DisplayName("Deve deletar uma pessoa com sucesso quando o ID for válido")
     void shouldDeletePersonSuccessfullyWhenIdIsValid() {
-        Long personID = 1L;
-        Person personToDelete = new Person(personID, "Jane Doe", LocalDate.of(1995, 5, 15), "123.456.789-00", new ArrayList<>());
+        Person personToDelete = new Person(validPersonId, "Jane Doe", LocalDate.of(1995, 5, 15), "123.456.789-00", new ArrayList<>());
 
-        when(personRepository.findById(personID)).thenReturn(Optional.of(personToDelete));
+        when(personRepository.findById(validPersonId)).thenReturn(Optional.of(personToDelete));
 
-        personService.deletePerson(personID);
+        personService.deletePerson(validPersonId);
 
-        verify(personRepository, times(1)).findById(personID);
+        verify(personRepository, times(1)).findById(validPersonId);
         verify(personRepository, times(1)).delete(personToDelete);
     }
 
     @Test
     @DisplayName("Deve lançar uma exceção ao tentar deletar uma pessoa com ID inexistente")
     void shouldThrowExceptionWhenDeletingNonExistentPerson() {
-        Long nonExistentId = 10L;
-        when(personRepository.findById(nonExistentId)).thenThrow(new ResourceNotFoundException("Person with ID " + nonExistentId + " not found."));
+        when(personRepository.findById(invalidPersonId)).thenThrow(new ResourceNotFoundException("Person with ID " + invalidPersonId + " not found."));
 
         try {
-            personService.deletePerson(nonExistentId);
+            personService.deletePerson(invalidPersonId);
         } catch (ResourceNotFoundException e) {
-            assertEquals("Person with ID " + nonExistentId + " not found.", e.getMessage());
+            assertEquals("Person with ID " + invalidPersonId + " not found.", e.getMessage());
         }
 
-        verify(personRepository, times(1)).findById(nonExistentId);
+        verify(personRepository, times(1)).findById(invalidPersonId);
         verifyNoMoreInteractions(personRepository);
     }
 
@@ -199,18 +198,17 @@ public class PersonServiceTest {
     @Test
     @DisplayName("Deve atualizar uma pessoa com sucesso quando o ID for válido e o CPF coincidir")
     void shouldUpdatePersonSuccessfullyWhenIdIsValidAndCpfMatches() {
-        Long personID = 1L;
         PersonRequestDTO personRequestDTO = new PersonRequestDTO("John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
-        Person existingPerson = new Person(personID, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
-        Person updatedPerson = new Person(personID, "John Doe Updated", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
-        PersonResponseDTO expectedResponseDTO = new PersonResponseDTO(personID, "John Doe Updated", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
+        Person existingPerson = new Person(validPersonId, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
+        Person updatedPerson = new Person(validPersonId, "John Doe Updated", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
+        PersonResponseDTO expectedResponseDTO = new PersonResponseDTO(validPersonId, "John Doe Updated", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
 
-        when(personRepository.findById(personID)).thenReturn(Optional.of(existingPerson));
+        when(personRepository.findById(validPersonId)).thenReturn(Optional.of(existingPerson));
         when(mapper.toEntity(personRequestDTO)).thenReturn(updatedPerson);
         when(personRepository.save(updatedPerson)).thenReturn(updatedPerson);
         when(mapper.toDTO(updatedPerson)).thenReturn(expectedResponseDTO);
 
-        PersonResponseDTO actualResponse = personService.updatePerson(personRequestDTO, personID);
+        PersonResponseDTO actualResponse = personService.updatePerson(personRequestDTO, validPersonId);
 
         assertNotNull(actualResponse);
         assertEquals(expectedResponseDTO.id(), actualResponse.id());
@@ -218,7 +216,7 @@ public class PersonServiceTest {
         assertEquals(expectedResponseDTO.dateOfBirth(), actualResponse.dateOfBirth());
         assertEquals(expectedResponseDTO.cpf(), actualResponse.cpf());
 
-        verify(personRepository, times(1)).findById(personID);
+        verify(personRepository, times(1)).findById(validPersonId);
         verify(mapper, times(1)).toEntity(personRequestDTO);
         verify(personRepository, times(1)).save(updatedPerson);
         verify(mapper, times(1)).toDTO(updatedPerson);
@@ -227,44 +225,41 @@ public class PersonServiceTest {
     @Test
     @DisplayName("Deve lançar uma exceção ao tentar atualizar uma pessoa com ID inexistente")
     void shouldThrowExceptionWhenUpdatingNonExistentPerson() {
-        Long nonExistentId = 10L;
         PersonRequestDTO personRequestDTO = new PersonRequestDTO("Jane Doe", LocalDate.of(1995, 5, 15), "123.456.789-00", new ArrayList<>());
 
-        when(personRepository.findById(nonExistentId)).thenThrow(new ResourceNotFoundException("Person with ID " + nonExistentId + " not found."));
+        when(personRepository.findById(invalidPersonId)).thenThrow(new ResourceNotFoundException("Person with ID " + invalidPersonId + " not found."));
         try {
-            personService.updatePerson(personRequestDTO, nonExistentId);
+            personService.updatePerson(personRequestDTO, invalidPersonId);
         } catch (ResourceNotFoundException e) {
-            assertEquals("Person with ID " + nonExistentId + " not found.", e.getMessage());
+            assertEquals("Person with ID " + invalidPersonId + " not found.", e.getMessage());
         }
-        verify(personRepository, times(1)).findById(nonExistentId);
+        verify(personRepository, times(1)).findById(invalidPersonId);
         verifyNoMoreInteractions(personRepository, mapper);
     }
 
     @Test
     @DisplayName("Deve lançar uma exceção ao tentar atualizar uma pessoa com CPF diferente do existente")
     void shouldThrowExceptionWhenUpdatingPersonWithDifferentCpf() {
-        Long personID = 1L;
         PersonRequestDTO personRequestDTO = new PersonRequestDTO("John Doe", LocalDate.of(2000, 1, 1), "123.456.789-00", new ArrayList<>());
-        Person existingPerson = new Person(personID, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
+        Person existingPerson = new Person(validPersonId, "John Doe", LocalDate.of(2000, 1, 1), "926.591.480-74", new ArrayList<>());
 
-        when(personRepository.findById(personID)).thenReturn(Optional.of(existingPerson));
+        when(personRepository.findById(validPersonId)).thenReturn(Optional.of(existingPerson));
         try {
-            personService.updatePerson(personRequestDTO, personID);
+            personService.updatePerson(personRequestDTO, validPersonId);
         } catch (CpfMismatchException e) {
             assertEquals("CPF mismatch.", e.getMessage());
         }
-        verify(personRepository, times(1)).findById(personID);
+        verify(personRepository, times(1)).findById(validPersonId);
         verifyNoMoreInteractions(personRepository, mapper);
     }
 
     @Test
     @DisplayName("Deve retornar a idade de uma pessoa com sucesso")
     void shouldReturnPersonAgeSuccessfully() {
-        Long personID = 1L;
-        Person person = new Person(personID, "Alice", LocalDate.of(1990, 1, 1), "123.456.789-00", new ArrayList<>());
+        Person person = new Person(validPersonId, "Alice", LocalDate.of(1990, 1, 1), "123.456.789-00", new ArrayList<>());
 
-        when(personRepository.findById(personID)).thenReturn(Optional.of(person));
-        String age = personService.calculateAgeById(personID);
+        when(personRepository.findById(validPersonId)).thenReturn(Optional.of(person));
+        String age = personService.calculateAgeById(validPersonId);
         String expectedAge = "The age of Alice is: " + person.getPersonAge() + " years.";
         assertEquals(expectedAge, age);
     }
